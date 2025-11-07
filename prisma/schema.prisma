@@ -1,0 +1,153 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  username  String   @unique
+  email     String   @unique
+  role      UserRole @default(STUDENT)
+  password  String
+  avatar    String?
+  cover     String?
+  birthDate DateTime @map("birth_date")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  STUDENT
+  GRADUETE
+}
+
+model Student {
+  id               String          @id @default(uuid())
+  name             String
+  email            String          @unique
+  firstName        String          @map("first_name")
+  lastName         String          @map("last_name")
+  avatar           String?
+  code             String
+  status           StudentStatus   @default(INACTIVE)
+  phone            String?
+  certifications   Certification[]
+  experiences      Experience[]
+  birthDate        DateTime        @map("birth_date")
+  bio              String?         @db.Text()
+  gender           String
+  employmentStatus Boolean         @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("students")
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  GRADUETED
+}
+
+model Certification {
+  id           String @id @default(uuid())
+  name         String
+  instituition String
+  description  String
+  startDate    String @map("start_date")
+  endDate      String @map("end_date")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  student   Student[]
+
+  @@map("certifications")
+}
+
+model Experience {
+  id           String    @id @default(uuid())
+  name         String
+  description  String
+  instituition String
+  startDate    String    @map("start_date")
+  endDate      String    @map("end_date")
+  students     Student[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("experience")
+}
+
+model Qualification {
+  id             String @id @default(uuid())
+  name           String
+  description    String
+  bannerUrl      String @map("banner_url")
+  workload       Int
+  duration       Int
+  pdfUrl         String @map("pdf_url")
+  noticeUrl      String @map("notice_url") //url do edital
+  knowledgeAreas String @map("knowledge_areas")
+
+  modules Module[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("qualifications")
+}
+
+model Module {
+  id            String        @id @default(uuid())
+  title         String
+  description   String
+  requirements  String
+  qualification Qualification @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
+
+  moduleLevels    ModuleLevel[]
+  qualificationId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("modules")
+}
+
+model ModuleLevel {
+  id       String @id @default(uuid())
+  title    String
+  pdfUrl   String @map("pad_url")
+  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("module_levels")
+}
+
+model Professor {
+  id String @id @default(uuid())
+
+  @@map("professors")
+}

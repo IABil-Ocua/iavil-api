@@ -1,0 +1,37 @@
+{
+  "name": "api-iabil",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch --env-file=.env src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@fastify/cors": "^11.1.0",
+    "@fastify/jwt": "^10.0.0",
+    "@prisma/client": "^6.16.2",
+    "@react-email/components": "^1.0.0",
+    "bcrypt": "^6.0.0",
+    "fastify": "^5.6.1",
+    "fastify-type-provider-zod": "^6.1.0",
+    "react": "^19.2.0",
+    "resend": "^6.4.2",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "i": "^0.3.7",
+    "npm": "^11.6.2",
+    "prisma": "^6.16.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
