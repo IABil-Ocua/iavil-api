@@ -12,7 +12,6 @@ export async function fetchQualificationsHandler(
       relationLoadStrategy: "query",
       include: {
         modules: true,
-        students: true,
       },
     });
 
@@ -40,7 +39,6 @@ export async function fetchQualificationHandler(
       relationLoadStrategy: "query",
       include: {
         modules: true,
-        students: true,
       },
       where: {
         id: id,

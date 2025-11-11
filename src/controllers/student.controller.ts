@@ -1,105 +1,24 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
-import { hash } from "bcrypt";
-import { Resend } from "resend";
+import ExcelJS from "exceljs";
 
 import { prisma } from "../lib/db";
-import { studentSchema } from "../schemas/student.schema";
-import { passwordGenerator } from "../lib/password-generator";
-//import { UserRegistrationTemplate } from "../emails/user-registration";
+import { createStudentSchema, studentSchema } from "../schemas/student.schema";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-export async function createStudentHandler(
-  request: FastifyRequest<{ Body: z.infer<typeof studentSchema> }>,
+export async function createManyStudentsHandler(
+  request: FastifyRequest<{ Body: z.infer<typeof createStudentSchema>[] }>,
   reply: FastifyReply
 ) {
   try {
-    const {
-      birthDate,
-      email,
-      gender,
-      name,
-      code,
-      avatar,
-      bio,
-      financier,
-      graduationYear,
-      phoneNumber2,
-      phoneNumber,
-      specialty,
-      qualificationId,
-    } = request.body;
+    const studentsData = request.body;
 
-    const password = passwordGenerator({
-      passwordLength: 10,
-      useLowerCase: true,
-      useNumbers: true,
-      useSymbols: false,
-      useUpperCase: true,
+    const createdStudents = await prisma.student.createMany({
+      data: studentsData,
     });
-    const hashedPassword = await hash(password, 10);
-
-    const student = await prisma.$transaction(
-      async (tx) => {
-        const student = await tx.student.create({
-          data: {
-            qualificationId,
-            birthDate,
-            email,
-            gender,
-            name,
-            code,
-            avatar,
-            bio,
-            financier,
-            graduationYear,
-            phoneNumber2,
-            phoneNumber,
-            specialty,
-          },
-        });
-
-        await tx.user.create({
-          data: {
-            username: email,
-            avatar,
-            name,
-            email,
-            password: hashedPassword,
-            role: "STUDENT",
-          },
-        });
-
-        return student;
-      },
-      { timeout: 40000 }
-    );
-
-    /*
-    const { data: emailData, error } = await resend.emails.send({
-      from: "Run Code School <comercial@binario.co.mz>",
-      to: [email],
-      subject: "Cofirmação de Registro na Plataforma | Run Code School",
-      react: UserRegistrationTemplate({
-        name: name,
-        email: email,
-        password: password,
-        role: "STUDENT",
-      }) as React.ReactElement,
-    });
-
-    if (error) {
-      console.error("Error sending email:", error);
-      return reply
-        .status(500)
-        .send({ error: "Error sending confirmation email" });
-    }
-    */
 
     return reply.status(201).send({
-      message: "Student created successfully",
-      student,
+      message: "Estudantes cadastrados com sucesso!",
+      students: createdStudents,
     });
   } catch (error) {
     console.error("Error creating student:", error);
@@ -114,9 +33,6 @@ export async function fetchStudentsHandler(
   try {
     const students = await prisma.student.findMany({
       relationLoadStrategy: "query",
-      include: {
-        qualification: true,
-      },
       orderBy: {
         createdAt: "asc",
       },
@@ -144,9 +60,6 @@ export async function fetchStudentByIdHandler(
 
     const student = await prisma.student.findUnique({
       relationLoadStrategy: "query",
-      include: {
-        qualification: true,
-      },
       where: {
         id,
       },
@@ -163,30 +76,45 @@ export async function fetchStudentByIdHandler(
   }
 }
 
-export async function fetchStudentsByCourseHandler(
+export async function exportExcelHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
   try {
-    const { qualificationId } = request.params as { qualificationId: string };
+    const students = await prisma.student.findMany();
 
-    const students = await prisma.student.findMany({
-      relationLoadStrategy: "query",
-      include: {
-        qualification: true,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-      where: {
-        qualificationId,
-      },
-    });
+    //Criar um workbook e uma sheet
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Estudantes");
 
-    return reply.status(200).send({ message: "ok", students });
+    //Cabeçalhos das colunas
+    worksheet.columns = [
+      { header: "ID", key: "id", width: 35 },
+      { header: "Nome", key: "name", width: 25 },
+      { header: "Código", key: "code", width: 15 },
+      { header: "Gênero", key: "gender", width: 10 },
+      { header: "Email", key: "email", width: 25 },
+    ];
+
+    //Adicionar as linhas
+    students.forEach((student) => worksheet.addRow(student));
+
+    // Preparar resposta
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    reply
+      .header(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      )
+      .header("Content-Disposition", "attachment; filename=students.xlsx")
+      .status(200)
+      .send(Buffer.from(buffer));
   } catch (error) {
-    console.log("Error fetching students:", error);
-    return reply.status(500).send({ message: "Internal server error", error });
+    console.log(error);
+    return reply
+      .status(500)
+      .send({ message: "Ocorreu um erro interno no servidor", error });
   }
 }
 
@@ -212,21 +140,8 @@ export async function updateStudentHandler(
       return reply.status(404).send({ message: "Student not found." });
     }
 
-    const {
-      birthDate,
-      email,
-      gender,
-      name,
-      code,
-      avatar,
-      bio,
-      financier,
-      graduationYear,
-      phoneNumber2,
-      phoneNumber,
-      specialty,
-      qualificationId,
-    } = request.body;
+    const { birthDate, email, gender, name, code, financier, specialty } =
+      request.body;
 
     const student = await prisma.$transaction(
       async (tx) => {
@@ -238,24 +153,8 @@ export async function updateStudentHandler(
             gender,
             name,
             code,
-            avatar,
-            bio,
             financier,
-            graduationYear,
-            phoneNumber2,
-            phoneNumber,
             specialty,
-            qualificationId,
-          },
-        });
-
-        await tx.user.update({
-          where: {
-            email: student.email,
-          },
-          data: {
-            email: student.email,
-            name,
           },
         });
 
@@ -296,29 +195,11 @@ export async function deleteStudentHandler(
       return reply.status(404).send({ message: "Student not found." });
     }
 
-    const existingUser = await prisma.user.findUnique({
-      where: {
-        email: student.email,
-      },
-    });
-
-    if (!existingUser) {
-      return reply
-        .status(404)
-        .send({ message: "The student don't have an account." });
-    }
-
     await prisma.$transaction(
       async (tx) => {
         await tx.student.delete({
           where: {
             id,
-          },
-        });
-
-        await tx.user.delete({
-          where: {
-            email: existingUser.email,
           },
         });
       },

@@ -4,9 +4,9 @@ import {
   deleteStudentHandler,
   fetchStudentsHandler,
   fetchStudentByIdHandler,
-  createStudentHandler,
+  createManyStudentsHandler,
   updateStudentHandler,
-  fetchStudentsByCourseHandler,
+  exportExcelHandler,
 } from "../controllers/student.controller";
 import z from "zod";
 
@@ -29,6 +29,23 @@ export async function studentRoutes(app: FastifyTypedInstance) {
   );
 
   app.get(
+    "/export",
+    {
+      //preHandler: app.authenticate,
+      schema: {
+        tags: ["students"],
+        description: "Export all students as Excel file",
+        response: {
+          500: z
+            .object({ message: z.string() })
+            .describe("Internal server error"),
+        },
+      },
+    },
+    exportExcelHandler
+  );
+
+  app.get(
     "/:id",
     {
       //preHandler: app.authenticate,
@@ -45,31 +62,14 @@ export async function studentRoutes(app: FastifyTypedInstance) {
     fetchStudentByIdHandler
   );
 
-  app.get(
-    "/course/:courseId",
-    {
-      //preHandler: app.authenticate,
-      schema: {
-        tags: ["students"],
-        description: "Fetch students by course",
-        response: {
-          500: z
-            .object({ message: z.string() })
-            .describe("Internal server error"),
-        },
-      },
-    },
-    fetchStudentsByCourseHandler
-  );
-
   app.post(
-    "/",
+    "/create-many",
     {
       //preHandler: app.authenticate,
       schema: {
         tags: ["students"],
-        description: "Create a new students",
-        body: studentSchema,
+        description: "Create many students",
+        body: z.array(studentSchema),
         response: {
           400: z.object({ message: z.string() }).describe("Bad request"),
           500: z
@@ -78,7 +78,7 @@ export async function studentRoutes(app: FastifyTypedInstance) {
         },
       },
     },
-    createStudentHandler
+    createManyStudentsHandler
   );
 
   app.delete(

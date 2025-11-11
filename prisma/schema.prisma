@@ -44,29 +44,54 @@ enum UserRole {
 }
 
 model Student {
-  id               String          @id @default(uuid())
-  name             String
-  email            String          @unique
-  avatar           String?
-  code             String
-  status           StudentStatus   @default(INACTIVE)
-  certifications   Certification[]
-  experiences      Experience[]
-  birthDate        DateTime?       @map("birth_date")
-  bio              String?         @db.Text()
-  gender           String?
-  employmentStatus Boolean         @default(false)
-  scholarship      Boolean         @default(false)
-  financier        String?
-  qualification    Qualification   @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
-  qualificationId  String
-  phoneNumber      String          @map("phone_number")
-  phoneNumber2     String?         @map("phone_number_2")
-  specialty        String?
-  graduationYear   String?
+  id                String    @id @default(uuid())
+  code              String    @unique
+  name              String
+  gender            String
+  scholarship       String
+  financier         String?
+  qualification     String
+  specialty         String?
+  birthProvince     String?   @map("birth_province")
+  birthDate         DateTime? @map("birth_date") @db.Date
+  idNumber          String?   @map("id_number")
+  email             String?
+  phone1            String?   @map("phone_1")
+  phone2            String?   @map("phone_2")
+  fatherAffiliation String?   @map("father_affiliation")
+  motherAffiliation String?   @map("mother_affiliation")
+  guardianName      String?   @map("guardian_name")
+  guardianAddress   String?   @map("guardian_address")
+  guardianPhone     String?   @map("guardian_phone")
+  status            String?
+  actualProvince    String?   @map("actual_province")
+  actualDistrict    String?   @map("actual_district")
+  currentOccupation String?   @map("current_occupation")
+  companyName       String?   @map("company_name")
+  companyPhone      String?   @map("company_phone")
+  position          String?
+  startYear         String?   @map("start_year")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  residencyRegime1 String? @map("residency_regime_1")
+  year1            String? @map("year_1")
+  level1           String? @map("level_1")
+  completionYear1  String? @map("completion_year_1")
+  observation1     String? @map("observation_1") @db.Text()
+
+  residencyRegime2 String? @map("residency_regime_2")
+  year2            String? @map("year_2")
+  level2           String? @map("level_2")
+  completionYear2  String? @map("completion_year_2")
+  observation2     String? @map("observation_2") @db.Text()
+
+  residencyRegime3 String? @map("residency_regime_3")
+  year3            String? @map("year_3")
+  level3           String? @map("level_3")
+  completionYear3  String? @map("completion_year_3")
+  observation3     String? @map("observation_3") @db.Text()
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("students")
 }
@@ -85,8 +110,6 @@ model Certification {
   startDate    String @map("start_date")
   endDate      String @map("end_date")
 
-  students Student[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -94,13 +117,12 @@ model Certification {
 }
 
 model Experience {
-  id           String    @id @default(uuid())
+  id           String @id @default(uuid())
   name         String
   description  String
   instituition String
-  startDate    String    @map("start_date")
-  endDate      String    @map("end_date")
-  students     Student[]
+  startDate    String @map("start_date")
+  endDate      String @map("end_date")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -119,8 +141,7 @@ model Qualification {
   noticeUrl      String? @map("notice_url") //url do edital
   knowledgeAreas String? @map("knowledge_areas")
 
-  modules  Module[]
-  students Student[]
+  modules Module[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
