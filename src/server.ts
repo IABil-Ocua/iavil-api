@@ -15,6 +15,7 @@ import { userRoutes } from "./routes/user.routes";
 import { QualificationRoutes } from "./routes/qualification.routes";
 import { studentRoutes } from "./routes/student.routes";
 import { eventRoutes } from "./routes/events.route";
+import { articleRoutes } from "./routes/articles.routes";
 
 const app =
   fastify(/**{
@@ -78,6 +79,7 @@ app.register(userRoutes, { prefix: "/users" });
 app.register(QualificationRoutes, { prefix: "/qualifications" });
 app.register(studentRoutes, { prefix: "/students" });
 app.register(eventRoutes, { prefix: "/events" });
+app.register(articleRoutes, { prefix: "/articles" });
 
 app.listen({ port: 3333, host: "0.0.0.0" }).then(() => {
   console.log(`Server running at port ${3333}`);
