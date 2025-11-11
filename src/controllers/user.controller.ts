@@ -18,19 +18,21 @@ export async function loginHandler(
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user || !(await compare(password, user.password))) {
+    if (!user) {
+      return reply.status(401).send({ message: "Invalid credentials" });
+    }
+
+    const passwordMatch = user.password
+      ? await compare(password, user.password)
+      : false;
+
+    if (!passwordMatch) {
       return reply.status(401).send({ message: "Invalid credentials" });
     }
 
     const token = await reply.jwtSign(
-      {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
-      {
-        expiresIn: "1d",
-      }
+      { id: user.id, email: user.email, role: user.role },
+      { expiresIn: "1d" }
     );
 
     return reply.status(200).send({ message: "ok", token, user });
@@ -95,6 +97,8 @@ export async function registerUserHandler(
       },
     });
 
+    /** 
+ * 
     const { data: emailData, error } = await resend.emails.send({
       from: "IAbil <dev@binario.co.mz>",
       to: [email],
@@ -108,9 +112,6 @@ export async function registerUserHandler(
         role: role,
       }) as React.ReactElement,
     });
-
-    /** 
- * 
  *     if (error) {
       console.error("Error sending email:", error);
       return reply
@@ -120,14 +121,8 @@ export async function registerUserHandler(
 */
 
     return reply.status(201).send({
-      message: "User registered successfully",
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        avatarUrl: user.avatar,
-      },
+      message: "Usuário criado com sucesso",
+      user,
     });
   } catch (error) {
     console.error("Error registering user:", error);

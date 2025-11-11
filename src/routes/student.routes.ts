@@ -10,24 +10,11 @@ import {
 } from "../controllers/student.controller";
 import z from "zod";
 
-const courseSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().nullable(), // null no banco
-  bannerUrl: z.string().nullable(), // null no banco
-  year: z.number(),
-  modulesNumber: z.number(),
-  status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]),
-  createdById: z.string(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-});
-
 export async function studentRoutes(app: FastifyTypedInstance) {
   app.get(
     "/",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["students"],
         description: "Fetch all students",
@@ -44,7 +31,7 @@ export async function studentRoutes(app: FastifyTypedInstance) {
   app.get(
     "/:id",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["students"],
         description: "Fetch student by ID",
@@ -61,7 +48,7 @@ export async function studentRoutes(app: FastifyTypedInstance) {
   app.get(
     "/course/:courseId",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["students"],
         description: "Fetch students by course",
@@ -97,7 +84,7 @@ export async function studentRoutes(app: FastifyTypedInstance) {
   app.delete(
     "/:id",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["students"],
         description: "Delete a student",
@@ -118,7 +105,7 @@ export async function studentRoutes(app: FastifyTypedInstance) {
   app.put(
     "/:id",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["students"],
         description: "Update a students by ID",

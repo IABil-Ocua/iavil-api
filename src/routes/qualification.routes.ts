@@ -49,7 +49,7 @@ export async function QualificationRoutes(app: FastifyTypedInstance) {
   app.post(
     "/",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["Qualifications"],
         description: "Create Qualification",
@@ -68,7 +68,7 @@ export async function QualificationRoutes(app: FastifyTypedInstance) {
   app.put(
     "/:id",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["Qualifications"],
         description: "Update Qualification",
@@ -88,7 +88,7 @@ export async function QualificationRoutes(app: FastifyTypedInstance) {
   app.delete(
     "/:id",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["Qualifications"],
         description: "Delete Qualification",

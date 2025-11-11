@@ -195,10 +195,9 @@ model Article {
   id         String        @id @default(cuid())
   title      String
   slug       String        @unique
-  excerpt    String? // pequeno resumo do artigo
   content    String // corpo principal (Markdown ou HTML)
   imageUrl   String? // imagem de capa
-  category   String? // ex: "Educação", "Ciência", "Tecnologia"
+  category   ArticleType
   tags       String? // tags separados por vírgula
   status     ArticleStatus @default(DRAFT)
   isFeatured Boolean       @default(false) // para destacar artigos na homepage
@@ -211,6 +210,11 @@ model Article {
   updatedAt   DateTime  @updatedAt
 
   @@map("articles")
+}
+
+enum ArticleType {
+  INNOVATION
+  PUBLICATION
 }
 
 enum ArticleStatus {

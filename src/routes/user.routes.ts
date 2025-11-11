@@ -10,7 +10,7 @@ export async function userRoutes(app: FastifyTypedInstance) {
   app.get(
     "/",
     {
-      preHandler: app.authenticate,
+      //preHandler: app.authenticate,
       schema: {
         tags: ["users"],
         description: "Fetch all users",
