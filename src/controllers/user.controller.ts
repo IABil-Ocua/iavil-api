@@ -40,6 +40,30 @@ export async function loginHandler(
   }
 }
 
+export async function listUsersHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  try {
+    const users = await prisma.user.findMany();
+
+    const safeUsers = users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      createdAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
+    }));
+
+    return reply.status(200).send({ message: "ok", users: safeUsers });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return reply.status(500).send({ message: "Internal Server Error", error });
+  }
+}
+
 export async function registerUserHandler(
   request: FastifyRequest<{ Body: z.infer<typeof createUserSchema> }>,
   reply: FastifyReply
@@ -107,6 +131,39 @@ export async function registerUserHandler(
     });
   } catch (error) {
     console.error("Error registering user:", error);
+    return reply.status(500).send({ message: "Internal Server Error", error });
+  }
+}
+
+export async function fetchAuthenticatedUserHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  try {
+    const userId = request.user.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return reply.status(404).send({ message: "User not found" });
+    }
+
+    return reply.status(200).send({
+      message: "ok",
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
     return reply.status(500).send({ message: "Internal Server Error", error });
   }
 }

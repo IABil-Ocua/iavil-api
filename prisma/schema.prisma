@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -16,18 +17,20 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  username  String   @unique
-  email     String   @unique
-  role      UserRole @default(STUDENT)
+  username  String    @unique
+  email     String    @unique
+  role      UserRole  @default(STUDENT)
   password  String
   avatar    String?
   cover     String?
-  birthDate DateTime @map("birth_date")
+  birthDate DateTime? @map("birth_date")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  events Event[]
 
   @@map("users")
 }
@@ -43,18 +46,23 @@ model Student {
   id               String          @id @default(uuid())
   name             String
   email            String          @unique
-  firstName        String          @map("first_name")
-  lastName         String          @map("last_name")
   avatar           String?
   code             String
   status           StudentStatus   @default(INACTIVE)
-  phone            String?
   certifications   Certification[]
   experiences      Experience[]
-  birthDate        DateTime        @map("birth_date")
+  birthDate        DateTime?       @map("birth_date")
   bio              String?         @db.Text()
-  gender           String
+  gender           String?
   employmentStatus Boolean         @default(false)
+  scholarship      Boolean         @default(false)
+  financier        String?
+  qualification    Qualification   @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
+  qualificationId  String
+  phoneNumber      String          @map("phone_number")
+  phoneNumber2     String?         @map("phone_number_2")
+  specialty        String?
+  graduationYear   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,9 +84,10 @@ model Certification {
   startDate    String @map("start_date")
   endDate      String @map("end_date")
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  student   Student[]
+  students Student[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("certifications")
 }
@@ -99,17 +108,18 @@ model Experience {
 }
 
 model Qualification {
-  id             String @id @default(uuid())
+  id             String  @id @default(uuid())
   name           String
-  description    String
-  bannerUrl      String @map("banner_url")
+  description    String?
+  bannerUrl      String? @map("banner_url")
   workload       Int
   duration       Int
-  pdfUrl         String @map("pdf_url")
-  noticeUrl      String @map("notice_url") //url do edital
-  knowledgeAreas String @map("knowledge_areas")
+  pdfUrl         String? @map("pdf_url")
+  noticeUrl      String? @map("notice_url") //url do edital
+  knowledgeAreas String? @map("knowledge_areas")
 
-  modules Module[]
+  modules  Module[]
+  students Student[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -150,4 +160,32 @@ model Professor {
   id String @id @default(uuid())
 
   @@map("professors")
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?   @db.Text()
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?
+  type        EventType
+  imageUrl    String?
+  organizer   String? // Nome da entidade ou departamento organizador
+  isPublished Boolean   @default(false)
+  category    String
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("events")
+}
+
+enum EventType {
+  TRAINING
+  SEMINAR
+  CONFERENCE
 }

@@ -1,10 +1,20 @@
 import { fastify } from "fastify";
 import cors from "@fastify/cors";
-import { ZodTypeProvider } from "fastify-type-provider-zod";
+import {
+  ZodTypeProvider,
+  jsonSchemaTransform,
+  validatorCompiler,
+  serializerCompiler,
+} from "fastify-type-provider-zod";
+import { fastifySwagger } from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 
 import fastifyJwtPlugin from "./plugins/jwt";
 import { authRoutes } from "./routes/auth.routes";
 import { userRoutes } from "./routes/user.routes";
+import { QualificationRoutes } from "./routes/qualification.routes";
+import { studentRoutes } from "./routes/student.routes";
+import { eventRoutes } from "./routes/events.route";
 
 const app =
   fastify(/**{
@@ -25,11 +35,49 @@ app.register(cors, {
 
 app.register(fastifyJwtPlugin);
 
+app.setValidatorCompiler(validatorCompiler); // Diz ao fastify que será usado zod para fazer as validações de entrada
+app.setSerializerCompiler(serializerCompiler); //Diz ao fastify que será usado o zod para fazer a serialização dos dados de saida
+
+app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: "RCS-Documenting API",
+      version: "1.0.0",
+      description: "API documentation for the RCS backend",
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+  },
+  transform: jsonSchemaTransform,
+});
+
+//Configuração do Swagger UI
+app.register(fastifySwaggerUi, {
+  routePrefix: "/docs",
+  uiConfig: {
+    docExpansion: "none",
+    deepLinking: false,
+  },
+});
+
 //ROTAS DOS ENDPOITS
 app.register(authRoutes, { prefix: "/auth" });
 app.register(userRoutes, { prefix: "/users" });
-
-console.log(process.env.RESEND_API_KEY);
+app.register(QualificationRoutes, { prefix: "/qualifications" });
+app.register(studentRoutes, { prefix: "/students" });
+app.register(eventRoutes, { prefix: "/events" });
 
 app.listen({ port: 3333, host: "0.0.0.0" }).then(() => {
   console.log(`Server running at port ${3333}`);
