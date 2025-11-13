@@ -64,7 +64,6 @@ export async function createQualificationHandler(
     const {
       duration,
       workload,
-      pdfUrl,
       noticeUrl,
       knowledgeAreas,
       name,
@@ -76,7 +75,6 @@ export async function createQualificationHandler(
       data: {
         duration,
         workload,
-        pdfUrl,
         noticeUrl,
         knowledgeAreas,
         name,
@@ -120,7 +118,6 @@ export async function updateQualificationHandler(
     const {
       duration,
       workload,
-      pdfUrl,
       noticeUrl,
       knowledgeAreas,
       name,
@@ -132,7 +129,6 @@ export async function updateQualificationHandler(
       data: {
         duration,
         workload,
-        pdfUrl,
         noticeUrl,
         knowledgeAreas,
         name,

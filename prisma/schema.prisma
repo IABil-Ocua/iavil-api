@@ -137,7 +137,6 @@ model Qualification {
   bannerUrl      String? @map("banner_url")
   workload       Int
   duration       Int
-  pdfUrl         String? @map("pdf_url")
   noticeUrl      String? @map("notice_url") //url do edital
   knowledgeAreas String? @map("knowledge_areas")
 
@@ -150,14 +149,14 @@ model Qualification {
 }
 
 model Module {
-  id            String        @id @default(uuid())
-  title         String
-  description   String
-  requirements  String
-  qualification Qualification @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
-
-  moduleLevels    ModuleLevel[]
+  id              String        @id @default(uuid())
+  title           String
+  description     String
+  requirements    String
+  qualification   Qualification @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
   qualificationId String
+
+  moduleLevels ModuleLevel[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -168,7 +167,7 @@ model Module {
 model ModuleLevel {
   id       String @id @default(uuid())
   title    String
-  pdfUrl   String @map("pad_url")
+  pdfUrl   String @map("pdf_url")
   module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId String
 
