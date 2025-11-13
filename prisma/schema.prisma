@@ -194,7 +194,6 @@ model Event {
   imageUrl    String?
   organizer   String? // Nome da entidade ou departamento organizador
   isPublished Boolean   @default(false)
-  category    String
 
   createdById String
   createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)

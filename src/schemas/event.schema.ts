@@ -19,7 +19,6 @@ export const createEventSchema = z.object({
   imageUrl: z.string().url("URL inválido").optional().nullable(),
   organizer: z.string().optional().nullable(),
   isPublished: z.boolean().optional().default(false),
-  category: z.string().min(2, "A categoria deve ter pelo menos 2 caracteres."),
   createdById: z.string().min(1, "O ID do criador é obrigatório."),
 });
 

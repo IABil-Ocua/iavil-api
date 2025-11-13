@@ -1,16 +1,14 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { prisma } from "../lib/db"; // importa a instância do Prisma
+import { prisma } from "../lib/db";
 import { createEventSchema, updateEventSchema } from "../schemas/event.schema";
 import z from "zod";
 
-// 🟢 Criar evento
 export async function createEventHandler(
   req: FastifyRequest<{ Body: z.infer<typeof createEventSchema> }>,
   reply: FastifyReply
 ) {
   try {
     const {
-      category,
       createdById,
       isPublished,
       startDate,
@@ -23,16 +21,17 @@ export async function createEventHandler(
       organizer,
     } = req.body;
 
+    console.log(req.body);
+
     const event = await prisma.event.create({
       data: {
-        category,
         createdById,
         isPublished,
-        startDate,
+        startDate: new Date(startDate),
         title,
         type,
         description,
-        endDate,
+        endDate: endDate ? new Date(endDate) : null,
         imageUrl,
         location,
         organizer,
@@ -99,7 +98,6 @@ export async function updateEventHandler(
   try {
     const { id } = req.params;
     const {
-      category,
       createdById,
       isPublished,
       startDate,
@@ -120,7 +118,6 @@ export async function updateEventHandler(
     const event = await prisma.event.update({
       where: { id },
       data: {
-        category,
         createdById,
         isPublished,
         startDate,
