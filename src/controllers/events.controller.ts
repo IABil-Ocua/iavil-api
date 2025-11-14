@@ -21,8 +21,6 @@ export async function createEventHandler(
       organizer,
     } = req.body;
 
-    console.log(req.body);
-
     const event = await prisma.event.create({
       data: {
         createdById,
