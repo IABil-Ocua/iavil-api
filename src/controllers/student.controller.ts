@@ -4,6 +4,8 @@ import ExcelJS from "exceljs";
 
 import { prisma } from "../lib/db";
 import { createStudentSchema, studentSchema } from "../schemas/student.schema";
+import { hash } from "bcrypt";
+import { passwordGenerator } from "../lib/password-generator";
 
 export async function createManyStudentsHandler(
   request: FastifyRequest<{ Body: z.infer<typeof createStudentSchema>[] }>,
@@ -20,6 +22,60 @@ export async function createManyStudentsHandler(
       message: "Estudantes cadastrados com sucesso!",
       students: createdStudents,
     });
+  } catch (error) {
+    console.error("Error creating students:", error);
+    return reply.status(500).send({ message: "Internal server error", error });
+  }
+}
+
+export async function createStudentHandler(
+  request: FastifyRequest<{ Body: z.infer<typeof createStudentSchema> }>,
+  reply: FastifyReply
+) {
+  try {
+    const { name, qualification, completionYear3, email, phone1, code } =
+      request.body;
+
+    const existingStudent = await prisma.student.findUnique({
+      where: {
+        code,
+      },
+    });
+
+    if (!existingStudent) {
+      await prisma.student.create({
+        data: {
+          name,
+          qualification,
+          completionYear3,
+          email,
+          phone1,
+          code,
+        },
+      });
+    }
+
+    const password = passwordGenerator({
+      passwordLength: 8,
+      useLowerCase: true,
+      useNumbers: true,
+      useSymbols: false,
+      useUpperCase: true,
+    });
+
+    const hashedPassword = await hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email: email!,
+        name,
+        password: hashedPassword,
+        username: email!,
+        role: "STUDENT",
+      },
+    });
+
+    return reply.status(201).send({ message: "ok", user });
   } catch (error) {
     console.error("Error creating student:", error);
     return reply.status(500).send({ message: "Internal server error", error });

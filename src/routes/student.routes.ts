@@ -7,6 +7,7 @@ import {
   createManyStudentsHandler,
   updateStudentHandler,
   exportExcelHandler,
+  createStudentHandler,
 } from "../controllers/student.controller";
 import z from "zod";
 
@@ -79,6 +80,24 @@ export async function studentRoutes(app: FastifyTypedInstance) {
       },
     },
     createManyStudentsHandler
+  );
+
+  app.post(
+    "/",
+    {
+      //preHandler: app.authenticate,
+      schema: {
+        tags: ["students"],
+        description: "Creat student",
+        response: {
+          400: z.object({ message: z.string() }).describe("Bad request"),
+          500: z
+            .object({ message: z.string() })
+            .describe("Internal server error"),
+        },
+      },
+    },
+    createStudentHandler
   );
 
   app.delete(

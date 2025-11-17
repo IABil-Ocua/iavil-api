@@ -6,8 +6,9 @@ import { Resend } from "resend";
 import { createUserSchema, loginSchema } from "../schemas/user.schema";
 import { prisma } from "../lib/db";
 import { UserRegistrationTemplate } from "../email/user-registration";
+import { passwordGenerator } from "../lib/password-generator";
 
-const resend = new Resend("re_mAKjqos4_KGKZnC6SUBV46FJRJb57FtdQ");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function loginHandler(
   request: FastifyRequest<{ Body: z.infer<typeof loginSchema> }>,
@@ -71,7 +72,7 @@ export async function registerUserHandler(
   reply: FastifyReply
 ) {
   try {
-    const { email, name, password, role, birthDate, username, avatar, cover } =
+    const { email, name, role, birthDate, username, avatar, cover } =
       request.body;
 
     const existingUser = await prisma.user.findUnique({
@@ -81,6 +82,14 @@ export async function registerUserHandler(
     if (existingUser) {
       return reply.status(400).send({ message: "User already exists" });
     }
+
+    const password = passwordGenerator({
+      passwordLength: 8,
+      useLowerCase: true,
+      useNumbers: true,
+      useSymbols: false,
+      useUpperCase: true,
+    });
 
     const hashedPassword = await hash(password, 10);
 
@@ -97,10 +106,8 @@ export async function registerUserHandler(
       },
     });
 
-    /** 
- * 
     const { data: emailData, error } = await resend.emails.send({
-      from: "IAbil <dev@binario.co.mz>",
+      from: "IAbil <plataforna@iabil.co.mz>",
       to: [email],
       subject: "Cofirmação de Registro na Plataforma | IABIl",
       react: UserRegistrationTemplate({
@@ -108,17 +115,17 @@ export async function registerUserHandler(
         email: email,
         password: password,
         platformName: "IABil",
-        loginUrl: "",
+        loginUrl: "https://iabil.co.mz/login",
         role: role,
       }) as React.ReactElement,
     });
- *     if (error) {
+
+    if (error) {
       console.error("Error sending email:", error);
       return reply
         .status(500)
         .send({ error: "Error sending confirmation email" });
     }
-*/
 
     return reply.status(201).send({
       message: "Usuário criado com sucesso",

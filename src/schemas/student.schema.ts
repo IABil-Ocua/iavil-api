@@ -13,7 +13,7 @@ export const studentSchema = z.object({
   birthProvince: z.string().optional().nullable(),
   birthDate: z.coerce.date().optional().nullable(),
   idNumber: z.coerce.string().optional().nullable(),
-  email: z.string().optional().nullable(),
+  email: z.string().optional(),
   phone1: z.coerce.string().optional().nullable(),
   phone2: z.coerce.string().optional().nullable(),
   fatherAffiliation: z.string().optional().nullable(),

@@ -44,33 +44,34 @@ enum UserRole {
 }
 
 model Student {
-  id                String    @id @default(uuid())
-  code              String    @unique
+  id                String                @id @default(uuid())
+  code              String                @unique
   name              String
-  gender            String
-  scholarship       String
+  gender            String?
+  scholarship       String?
   financier         String?
   qualification     String
+  approvalStatus    StudentApprovalStatus @default(NOT_APPROVED)
   specialty         String?
-  birthProvince     String?   @map("birth_province")
-  birthDate         DateTime? @map("birth_date") @db.Date
-  idNumber          String?   @map("id_number")
+  birthProvince     String?               @map("birth_province")
+  birthDate         DateTime?             @map("birth_date") @db.Date
+  idNumber          String?               @map("id_number")
   email             String?
-  phone1            String?   @map("phone_1")
-  phone2            String?   @map("phone_2")
-  fatherAffiliation String?   @map("father_affiliation")
-  motherAffiliation String?   @map("mother_affiliation")
-  guardianName      String?   @map("guardian_name")
-  guardianAddress   String?   @map("guardian_address")
-  guardianPhone     String?   @map("guardian_phone")
+  phone1            String?               @map("phone_1")
+  phone2            String?               @map("phone_2")
+  fatherAffiliation String?               @map("father_affiliation")
+  motherAffiliation String?               @map("mother_affiliation")
+  guardianName      String?               @map("guardian_name")
+  guardianAddress   String?               @map("guardian_address")
+  guardianPhone     String?               @map("guardian_phone")
   status            String?
-  actualProvince    String?   @map("actual_province")
-  actualDistrict    String?   @map("actual_district")
-  currentOccupation String?   @map("current_occupation")
-  companyName       String?   @map("company_name")
-  companyPhone      String?   @map("company_phone")
+  actualProvince    String?               @map("actual_province")
+  actualDistrict    String?               @map("actual_district")
+  currentOccupation String?               @map("current_occupation")
+  companyName       String?               @map("company_name")
+  companyPhone      String?               @map("company_phone")
   position          String?
-  startYear         String?   @map("start_year")
+  startYear         String?               @map("start_year")
 
   residencyRegime1 String? @map("residency_regime_1")
   year1            String? @map("year_1")
@@ -100,6 +101,11 @@ enum StudentStatus {
   ACTIVE
   INACTIVE
   GRADUETED
+}
+
+enum StudentApprovalStatus {
+  APPROVED
+  NOT_APPROVED
 }
 
 model Certification {
