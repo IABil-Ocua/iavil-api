@@ -80,7 +80,9 @@ export async function registerUserHandler(
     });
 
     if (existingUser) {
-      return reply.status(400).send({ message: "User already exists" });
+      return reply
+        .status(400)
+        .send({ message: "Já existe um usuário cadastrado com o mesmo email" });
     }
 
     const password = passwordGenerator({
