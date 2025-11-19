@@ -260,3 +260,26 @@ model JobVacancy {
 
   @@map("job-vacancies")
 }
+
+model Scholarship {
+  id          String            @id @default(cuid())
+  name        String
+  description String?
+  sponsor     String? // Entidade financiadora
+  amount      Float? // Valor total da bolsa
+  type        String // Ex.: "Integral", "Parcial", "Mérito", "Carência"
+  startDate   DateTime? // Quando o apoio inicia
+  endDate     DateTime? // Quando termina
+  status      ScholarshipStatus @default(INACTIVE) // active | inactive | closed
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("scholarships")
+}
+
+enum ScholarshipStatus {
+  ACTIVE
+  INACTIVE
+  CLOSED
+}
