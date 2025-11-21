@@ -44,9 +44,9 @@ app.setSerializerCompiler(serializerCompiler); //Diz ao fastify que será usado 
 app.register(fastifySwagger, {
   openapi: {
     info: {
-      title: "RCS-Documenting API",
+      title: "IABil-Documenting API",
       version: "1.0.0",
-      description: "API documentation for the RCS backend",
+      description: "API documentation for the IABil backend",
     },
     components: {
       securitySchemes: {

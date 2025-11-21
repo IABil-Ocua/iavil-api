@@ -15,6 +15,21 @@ export async function userRoutes(app: FastifyTypedInstance) {
         tags: ["users"],
         description: "Fetch all users",
         response: {
+          200: z
+            .object({
+              message: z.string(),
+              users: z.array(
+                z.object({
+                  id: z.string(),
+                  name: z.string(),
+                  role: z.string(),
+                  avatar: z.string().nullable(),
+                  createdAt: z.coerce.date(),
+                  updatedAt: z.coerce.date(),
+                })
+              ),
+            })
+            .describe("Users fetched successfully"),
           500: z
             .object({ message: z.string() })
             .describe("Internal server error"),

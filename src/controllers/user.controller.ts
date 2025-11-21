@@ -56,8 +56,8 @@ export async function listUsersHandler(
       email: user.email,
       role: user.role,
       avatar: user.avatar,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     }));
 
     return reply.status(200).send({ message: "ok", users: safeUsers });
