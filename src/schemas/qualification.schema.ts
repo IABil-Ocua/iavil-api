@@ -5,7 +5,6 @@ export const qualificationSchema = z.object({
   description: z.string().optional(),
   bannerUrl: z.string().url().optional(),
   workload: z.number().int().positive(),
-  duration: z.number().int().positive(),
-  noticeUrl: z.string().optional(),
+  credits: z.number().int().positive(),
   knowledgeAreas: z.string().optional(),
 });

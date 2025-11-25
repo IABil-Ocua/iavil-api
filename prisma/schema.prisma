@@ -142,11 +142,10 @@ model Qualification {
   description    String?
   bannerUrl      String? @map("banner_url")
   workload       Int
-  duration       Int
-  noticeUrl      String? @map("notice_url") //url do edital
+  credits        Int
   knowledgeAreas String? @map("knowledge_areas")
 
-  modules Module[]
+  levels QualificationLevel[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -154,33 +153,19 @@ model Qualification {
   @@map("qualifications")
 }
 
-model Module {
-  id              String        @id @default(uuid())
-  title           String
-  description     String
-  requirements    String
+model QualificationLevel {
+  id          String  @id @default(uuid())
+  title       String
+  description String  @db.Text
+  noticeUrl   String? @map("notice_url") //url do edital
+
   qualification   Qualification @relation(fields: [qualificationId], references: [id], onDelete: Cascade)
   qualificationId String
 
-  moduleLevels ModuleLevel[]
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("modules")
-}
-
-model ModuleLevel {
-  id       String @id @default(uuid())
-  title    String
-  pdfUrl   String @map("pdf_url")
-  module   Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  moduleId String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("module_levels")
+  @@map("qualifications_levels")
 }
 
 model Professor {

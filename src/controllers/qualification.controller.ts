@@ -11,7 +11,7 @@ export async function fetchQualificationsHandler(
     const qualifications = await prisma.qualification.findMany({
       relationLoadStrategy: "query",
       include: {
-        modules: true,
+        levels: true,
       },
     });
 
@@ -38,7 +38,7 @@ export async function fetchQualificationHandler(
     const qualification = await prisma.qualification.findUnique({
       relationLoadStrategy: "query",
       include: {
-        modules: true,
+        levels: true,
       },
       where: {
         id: id,
@@ -61,21 +61,13 @@ export async function createQualificationHandler(
   reply: FastifyReply
 ) {
   try {
-    const {
-      duration,
-      workload,
-      noticeUrl,
-      knowledgeAreas,
-      name,
-      bannerUrl,
-      description,
-    } = request.body;
+    const { credits, workload, knowledgeAreas, name, bannerUrl, description } =
+      request.body;
 
     const qualification = await prisma.qualification.create({
       data: {
-        duration,
+        credits,
         workload,
-        noticeUrl,
         knowledgeAreas,
         name,
         bannerUrl,
@@ -115,21 +107,13 @@ export async function updateQualificationHandler(
       return reply.status(404).send({ message: "Qualification not found" });
     }
 
-    const {
-      duration,
-      workload,
-      noticeUrl,
-      knowledgeAreas,
-      name,
-      bannerUrl,
-      description,
-    } = request.body;
+    const { credits, workload, knowledgeAreas, name, bannerUrl, description } =
+      request.body;
 
     const qualification = await prisma.qualification.update({
       data: {
-        duration,
+        credits,
         workload,
-        noticeUrl,
         knowledgeAreas,
         name,
         bannerUrl,
