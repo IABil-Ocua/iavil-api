@@ -11,17 +11,14 @@ export async function createJobVacancyHandler(
   reply: FastifyReply
 ) {
   try {
-    const { area, description, requirements, title, imageUrl, publishedAt } =
-      req.body;
+    const { companyName, location, title, url } = req.body;
 
     const JobVacancy = await prisma.jobVacancy.create({
       data: {
-        area,
-        description,
-        requirements,
+        url,
+        companyName,
+        location,
         title,
-        imageUrl,
-        publishedAt: new Date(publishedAt),
       },
     });
     return reply
@@ -40,9 +37,7 @@ export async function getJobVacanciesHandler(
   reply: FastifyReply
 ) {
   try {
-    const jobVacancies = await prisma.jobVacancy.findMany({
-      orderBy: { publishedAt: "desc" },
-    });
+    const jobVacancies = await prisma.jobVacancy.findMany();
 
     return reply.status(200).send({ message: "ok", jobVacancies });
   } catch (error) {
@@ -83,8 +78,7 @@ export async function updateJobVacancyHandler(
 ) {
   try {
     const { id } = req.params;
-    const { area, description, imageUrl, publishedAt, requirements, title } =
-      req.body;
+    const { companyName, location, title, url } = req.body;
 
     const existing = await prisma.jobVacancy.findUnique({ where: { id } });
 
@@ -96,11 +90,9 @@ export async function updateJobVacancyHandler(
     const JobVacancy = await prisma.jobVacancy.update({
       where: { id },
       data: {
-        area,
-        description,
-        imageUrl,
-        publishedAt,
-        requirements,
+        url,
+        companyName,
+        location,
         title,
       },
     });

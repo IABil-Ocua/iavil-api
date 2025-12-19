@@ -1,3 +1,4 @@
+import { url } from "node:inspector";
 import z from "zod";
 
 /**export const createJobVacancySchema = z.object({
@@ -20,13 +21,9 @@ import z from "zod";
 
 export const createJobVacancySchema = z.object({
   title: z.string().min(3, "O título é obrigatório"),
-  area: z.string().min(2, "A área é obrigatória"),
-  description: z
-    .string()
-    .min(10, "A descrição deve ter no mínimo 10 caracteres"),
-  requirements: z.string().min(5, "Os requisitos são obrigatórios"),
-  imageUrl: z.string().optional(),
-  publishedAt: z.coerce.date(),
+  companyName: z.string().min(2, "O nome da empresa é obrigatória"),
+  url: z.string(),
+  location: z.string().min(5, "O local é obrigatório"),
 });
 
 export const updateJobVacancySchema = createJobVacancySchema.partial();

@@ -234,14 +234,14 @@ enum ArticleStatus {
 }
 
 model JobVacancy {
-  id           String   @id @default(cuid())
-  title        String
-  area         String
-  description  String
-  requirements String
-  imageUrl     String?
-  publishedAt  DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String @id @default(cuid())
+  title       String
+  companyName String
+  location    String
+  url         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("job-vacancies")
 }

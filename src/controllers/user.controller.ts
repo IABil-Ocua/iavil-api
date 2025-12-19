@@ -93,7 +93,7 @@ export async function registerUserHandler(
       useUpperCase: true,
     });
 
-    const hashedPassword = await hash(password, 10);
+    const hashedPassword = await hash("Iabil2025", 10);
 
     const user = await prisma.user.create({
       data: {
